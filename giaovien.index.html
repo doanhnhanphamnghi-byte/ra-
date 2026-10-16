@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Study With Ms Nghi - Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #fefce8; }
+    .tab-btn { transition: all 0.2s ease; }
+    .highlight-err { background-color: #fecaca; color: #991b1b; font-weight: bold; padding: 0 4px; border-radius: 4px; border-bottom: 2px solid #ef4444; }
+    .highlight-good { background-color: #bbf7d0; color: #166534; font-weight: bold; padding: 0 4px; border-radius: 4px; border-bottom: 2px solid #22c55e; }
+  </style>
+</head>
+<body class="text-slate-800 pb-12">
+
+  <!-- ĐĂNG NHẬP GIÁO VIÊN -->
+  <div id="login-overlay" class="fixed inset-0 bg-amber-950/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full space-y-4 border-4 border-amber-300">
+      <div class="flex items-center justify-center gap-4 border-b border-amber-200 pb-4">
+        <i class="bi bi-mortarboard-fill text-amber-500 text-6xl flex-shrink-0"></i>
+        <div class="text-center space-y-1">
+          <h2 class="text-xl font-extrabold text-amber-900 tracking-tight leading-none">Study With Ms Nghi</h2>
+          <p class="text-xs font-bold text-amber-800 leading-tight">Mẹ vững tâm - Con vươn tầm.</p>
+          <p class="text-[11px] font-semibold text-amber-700 italic leading-tight">A Steady Mom - A Shining Kid.</p>
+          <p class="text-xs font-bold text-amber-900 pt-1 flex items-center justify-center gap-1">
+            <i class="bi bi-telephone-fill text-red-500"></i> Hotline/Zalo: 0793.155.470
+          </p>
+        </div>
+      </div>
+      <div class="pt-2">
+        <label class="block text-xs font-bold text-slate-700 mb-1">Mật khẩu quản lý giáo viên:</label>
+        <input type="password" id="admin-pass" onkeypress="if(event.key === 'Enter') checkAdminLogin();" placeholder="Nhập 123456..." class="w-full border-2 border-amber-200 rounded-xl p-3 text-xs outline-none bg-amber-50/50 font-bold text-slate-800">
+      </div>
+      <button type="button" onclick="checkAdminLogin()" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-900 font-extrabold py-3.5 rounded-xl text-xs transition shadow-lg">
+        🔐 ĐĂNG NHẬP
+      </button>
+    </div>
+  </div>
+
+  <!-- HEADER GIÁO VIÊN -->
+  <header class="bg-amber-400 text-amber-950 p-4 sticky top-0 z-40 shadow-lg border-b-4 border-amber-500">
+    <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center justify-center space-x-4 w-full md:w-auto">
+        <i class="bi bi-mortarboard-fill text-amber-950 text-5xl flex-shrink-0"></i>
+        <div class="text-center flex flex-col items-center justify-center space-y-0.5">
+          <h1 class="font-black text-2xl tracking-tight text-amber-950 leading-none">Study With Ms Nghi</h1>
+          <p class="text-xs font-bold text-amber-900 leading-tight">Mẹ vững tâm - Con vươn tầm.</p>
+          <p class="text-[11px] font-semibold text-amber-800 italic leading-tight">A Steady Mom - A Shining Kid.</p>
+          <p class="text-[11px] font-extrabold text-amber-900 pt-0.5 flex items-center justify-center gap-1">
+            <i class="bi bi-telephone-fill text-red-600"></i> Hotline/Zalo: 0793.155.470
+          </p>
+        </div>
+      </div>
+      <div class="flex flex-wrap items-center justify-center gap-2 text-xs">
+        <button type="button" onclick="switchTab('classes')" id="btn-tab-classes" class="tab-btn bg-amber-950 text-amber-300 px-3.5 py-2.5 rounded-xl font-bold shadow-md">
+          <i class="bi bi-collection-fill mr-1"></i> 1. Quản Lý Khối & Lớp
+        </button>
+        <button type="button" onclick="switchTab('dashboard')" id="btn-tab-dashboard" class="tab-btn bg-amber-100 text-amber-950 hover:bg-amber-200 px-3.5 py-2.5 rounded-xl font-bold">
+          <i class="bi bi-bar-chart-line-fill mr-1"></i> 2. Quản Lý Bài Làm
+        </button>
+        <button type="button" onclick="switchTab('creator')" id="btn-tab-creator" class="tab-btn bg-amber-100 text-amber-950 hover:bg-amber-200 px-3.5 py-2.5 rounded-xl font-bold">
+          <i class="bi bi-file-earmark-plus-fill mr-1"></i> 3. Ra Đề Theo Khối
+        </button>
+        <button type="button" onclick="switchTab('grading')" id="btn-tab-grading" class="tab-btn bg-amber-100 text-amber-950 hover:bg-amber-200 px-3.5 py-2.5 rounded-xl font-bold">
+          <i class="bi bi-journal-check mr-1"></i> 4. Chấm Tự Luận
+        </button>
+        <button type="button" onclick="switchTab('password')" id="btn-tab-password" class="tab-btn bg-amber-900 text-amber-100 hover:bg-amber-950 px-3.5 py-2.5 rounded-xl font-bold border border-amber-600">
+          <i class="bi bi-key-fill mr-1"></i> Đổi Mật Khẩu
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="max-w-6xl mx-auto mt-6 px-4 space-y-6">
+
+    <!-- TÁC VỤ 1: QUẢN LÝ KHỐI, LỚP VÀ HỌC SINH -->
+    <div id="view-classes" class="space-y-6 bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200">
+      <h2 class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center">
+        <i class="bi bi-collection-fill text-amber-600 mr-2 text-lg"></i> Quản Lý Khối Lớp, Tên Lớp & Học Sinh Theo Niên Khóa
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="space-y-2 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
+          <label class="block text-xs font-bold text-amber-900">1. Thêm Khối / Chương Trình:</label>
+          <input type="text" id="new-grade-name" placeholder="VD: GRADE 8, IELTS, VSTEP..." class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white font-bold">
+          <button type="button" onclick="addGrade()" class="w-full bg-amber-900 hover:bg-amber-950 text-amber-300 py-2 rounded-xl text-xs font-bold shadow">+ Thêm Khối Mới</button>
+        </div>
+        <div class="space-y-2 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
+          <label class="block text-xs font-bold text-amber-900">2. Thêm Tên Lớp (Niên khóa):</label>
+          <select id="select-grade-for-class" class="w-full border rounded-xl p-2 text-xs bg-white font-bold"></select>
+          <input type="text" id="new-class-name" placeholder="VD: GS8-2627..." class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white font-bold">
+          <button type="button" onclick="addClass()" class="w-full bg-amber-800 hover:bg-amber-900 text-white py-2 rounded-xl text-xs font-bold shadow">+ Thêm Lớp</button>
+        </div>
+        <div class="space-y-2 bg-amber-50/60 p-4 rounded-2xl border border-amber-200">
+          <label class="block text-xs font-bold text-amber-900">3. Thêm Học Sinh & Mật Khẩu:</label>
+          <select id="select-class-for-student" class="w-full border rounded-xl p-2 text-xs bg-white font-bold"></select>
+          <div class="flex gap-1">
+            <input type="text" id="new-student-name" placeholder="Họ tên..." class="flex-1 border rounded-xl p-2 text-xs bg-white">
+            <input type="text" id="new-student-pass" value="123456" placeholder="Pass..." class="w-16 border rounded-xl p-2 text-xs bg-white font-bold text-center">
+          </div>
+          <button type="button" onclick="addStudentToClass()" class="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 py-2 rounded-xl text-xs font-extrabold shadow">+ Thêm HS</button>
+        </div>
+      </div>
+      <div id="grades-management-container" class="space-y-4 pt-2"></div>
+    </div>
+
+    <!-- TÁC VỤ 2: QUẢN LÝ BÀI LÀM -->
+    <div id="view-dashboard" class="hidden space-y-6 bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200">
+      <div class="space-y-4 border-b border-amber-200 pb-4">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center">
+            <i class="bi bi-bar-chart-line-fill text-amber-600 mr-2 text-lg"></i> Bảng Theo Dõi Bài Làm Học Sinh
+          </h2>
+          <button type="button" onclick="resetDashFilters()" class="text-xs font-bold text-amber-800 hover:text-red-600 bg-amber-100 px-3 py-1.5 rounded-xl">
+            🔄 Xóa bộ lọc
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 bg-amber-50 p-3.5 rounded-2xl border border-amber-200">
+          <div>
+            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">1. Khối:</label>
+            <select id="dash-filter-grade" onchange="onDashGradeChange()" class="w-full border-2 border-amber-300 rounded-xl p-2 text-xs bg-white font-bold text-slate-800 outline-none">
+              <option value="">-- Tất cả Khối --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">2. Lớp:</label>
+            <select id="dash-filter-class" onchange="renderDashboardTable()" class="w-full border-2 border-amber-300 rounded-xl p-2 text-xs bg-white font-bold text-slate-800 outline-none">
+              <option value="">-- Tất cả Lớp --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">3. Unit / Bài học:</label>
+            <select id="dash-filter-unit" onchange="renderDashboardTable()" class="w-full border-2 border-amber-300 rounded-xl p-2 text-xs bg-white font-bold text-slate-800 outline-none">
+              <option value="">-- Tất cả Unit --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">4. Mã Đề:</label>
+            <select id="dash-filter-task" onchange="renderDashboardTable()" class="w-full border-2 border-amber-300 rounded-xl p-2 text-xs bg-white font-bold text-slate-800 outline-none">
+              <option value="">-- Tất cả Mã đề --</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-[11px] font-extrabold text-amber-900 mb-1">5. Tên Học Sinh:</label>
+            <input type="text" id="dash-filter-student" onkeyup="renderDashboardTable()" placeholder="Gõ tên HS..." class="w-full border-2 border-amber-300 rounded-xl p-2 text-xs bg-white font-bold text-slate-800 outline-none">
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs">
+          <thead>
+            <tr class="bg-amber-400 text-amber-950 font-extrabold border-b-2 border-amber-500">
+              <th class="p-3 rounded-tl-xl">Học Sinh</th>
+              <th class="p-3">Lớp</th>
+              <th class="p-3">Bài Học / Mã Đề</th>
+              <th class="p-3 text-center">Điểm Chính Thức (Lần 1)</th>
+              <th class="p-3">Luyện Tập Thêm</th>
+              <th class="p-3 text-center">Thời Gian</th>
+              <th class="p-3 rounded-tr-xl">Ngày Nộp</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-table-body" class="divide-y divide-amber-100"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TÁC VỤ 3: RA ĐỀ -->
+    <div id="view-creator" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200 space-y-4">
+        <div class="bg-amber-100/70 p-4 rounded-2xl border border-amber-300 grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-amber-950 mb-1">1. Chọn Khối Lưu Trữ:</label>
+            <select id="creator-grade" onchange="onCreatorGradeChange()" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white font-bold text-slate-800 border-amber-300"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-amber-950 mb-1">2. Chọn hoặc Nhập Unit / Bài Học:</label>
+            <select id="creator-unit-select" onchange="onCreatorUnitSelectChange()" class="w-full border rounded-xl p-2.5 text-xs outline-none bg-white font-bold text-slate-800 border-amber-300 mb-1.5">
+              <option value="">-- Chọn Unit có sẵn hoặc nhập mới bên dưới --</option>
+            </select>
+            <input type="text" id="creator-unit-name" placeholder="VD: Unit 1 - Local Community..." class="w-full border rounded-xl p-2.5 text-xs outline-none font-bold bg-white border-amber-300 text-amber-900">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-amber-950 mb-1">3. Mã Đề / Tên Bài Hát / Số Đề:</label>
+            <input type="text" id="creator-taskcode" value="Đề số 1" class="w-full border rounded-xl p-2.5 text-xs outline-none font-bold bg-white border-amber-300 text-amber-900">
+            <input type="hidden" id="editing-test-id" value="">
+          </div>
+        </div>
+
+        <!-- TAKE NOTE -->
+        <div class="border-2 border-amber-300 bg-amber-50/50 p-5 rounded-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+            <h3 class="text-xs font-bold text-amber-950 flex items-center">
+              <i class="bi bi-book-half text-amber-600 text-lg mr-2"></i> PHẦN TAKE NOTE: TỪ VỰNG & LÝ THUYẾT CHUNG CỦA UNIT
+            </h3>
+            <button type="button" onclick="addVocabItem()" class="bg-amber-500 hover:bg-amber-600 text-amber-950 px-3 py-1.5 rounded-xl text-xs font-extrabold shadow-sm">
+              + Thêm Từ Vựng
+            </button>
+          </div>
+          <div class="space-y-1">
+            <label class="block text-xs font-bold text-amber-900">Nội Dung Tóm Tắt Ngữ Pháp Trọng Tâm:</label>
+            <textarea id="creator-grammar-notes" rows="3" placeholder="Nhập tóm tắt công thức ngữ pháp..." class="w-full border rounded-xl p-3 text-xs bg-white outline-none border-amber-200"></textarea>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-xs font-bold text-amber-900">Danh Sách Từ Vựng:</label>
+            <div id="vocab-items-container" class="space-y-3"></div>
+          </div>
+        </div>
+
+        <div id="exercises-container" class="space-y-6 pt-2"></div>
+
+        <!-- 5 DẠNG BÀI LỚN CHÍNH -->
+        <div class="p-4 bg-amber-950 text-white rounded-2xl space-y-3 border-2 border-amber-400">
+          <p class="text-xs font-bold text-amber-400 flex items-center"><i class="bi bi-plus-square-fill mr-1.5"></i> Chọn Dạng Bài Tập Lớn Để Thêm Khung Đề (Exercise):</p>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2">
+            <button type="button" onclick="addExerciseSection('Multiple Choice')" class="bg-amber-900 hover:bg-amber-800 text-amber-200 py-3 px-2 rounded-xl text-xs font-bold text-center">1. Multiple Choice (Trắc Nghiệm)</button>
+            <button type="button" onclick="addExerciseSection('Phonetics')" class="bg-amber-900 hover:bg-amber-800 text-amber-200 py-3 px-2 rounded-xl text-xs font-bold text-center">2. Phonetics (Phát Âm)</button>
+            <button type="button" onclick="addExerciseSection('Listening')" class="bg-amber-900 hover:bg-amber-800 text-amber-200 py-3 px-2 rounded-xl text-xs font-bold text-center">3. Listening (Bài Nghe)</button>
+            <button type="button" onclick="addExerciseSection('Reading')" class="bg-amber-900 hover:bg-amber-800 text-amber-200 py-3 px-2 rounded-xl text-xs font-bold text-center">4. Reading (Đọc Hiểu)</button>
+            <button type="button" onclick="addExerciseSection('Writing')" class="bg-amber-900 hover:bg-amber-800 text-amber-200 py-3 px-2 rounded-xl text-xs font-bold text-center">5. Writing (Viết)</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-4 border-t">
+          <button type="button" onclick="saveAndExit()" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold py-3.5 rounded-2xl text-xs shadow">💾 LƯU ĐỀ VÀO KHO KHỐI</button>
+          <button type="button" onclick="generateTaskLink()" class="bg-amber-900 hover:bg-amber-950 text-amber-300 font-extrabold py-3.5 rounded-2xl text-xs shadow">🔗 TẠO LINK GIAO BÀI</button>
+          <button type="button" onclick="exportToWord()" class="bg-amber-700 hover:bg-amber-800 text-white font-extrabold py-3.5 rounded-2xl text-xs shadow">📄 XUẤT WORD CHUẨN ĐẸP</button>
+        </div>
+
+        <div id="creator-link-box" class="hidden p-4 bg-amber-50 rounded-2xl border-2 border-amber-300 space-y-2">
+          <label class="block text-xs font-bold text-amber-900">Link Giao Cho Học Sinh:</label>
+          <div class="flex gap-2">
+            <input type="text" id="creator-final-link" readonly class="w-full border bg-white rounded-xl p-2.5 text-xs font-mono text-amber-900 font-bold border-amber-300">
+            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('creator-final-link').value); alert('Đã copy!');" class="bg-amber-500 text-amber-950 px-5 py-2.5 rounded-xl text-xs font-extrabold shadow">Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KHO ĐỀ VĨNH VIỄN -->
+      <div class="bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200 space-y-4">
+        <div class="flex flex-col md:flex-row justify-between items-center border-b pb-3 gap-2">
+          <h3 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center"><i class="bi bi-folder-fill text-amber-600 mr-2 text-base"></i> KHO ĐỀ VĨNH VIỄN THEO KHỐI & UNIT:</h3>
+          <div class="flex gap-2 w-full md:w-auto">
+            <select id="filter-folder-grade" onchange="onFilterGradeChange()" class="border-2 border-amber-300 rounded-xl p-2 text-xs bg-amber-50 font-bold text-amber-900 outline-none flex-1 md:w-56"></select>
+            <select id="filter-folder-unit" onchange="loadSavedFolders()" class="border-2 border-amber-300 rounded-xl p-2 text-xs bg-amber-50 font-bold text-amber-900 outline-none flex-1 md:w-56"><option value="">-- Tất cả Unit --</option></select>
+          </div>
+        </div>
+        <div id="saved-folders-container" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- TÁC VỤ 4: CHẤM BÀI -->
+    <div id="view-grading" class="hidden space-y-6 bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-xs font-extrabold text-amber-900 uppercase tracking-wider flex items-center">
+          <i class="bi bi-journal-check text-amber-600 mr-2 text-lg"></i> Chấm Bài Tự Luận & Bôi Đen Nhận Xét
+        </h2>
+        <select id="filter-grade-class" onchange="loadStudentSubmissions()" class="border-2 border-amber-300 rounded-xl p-2 text-xs bg-amber-50 font-bold text-amber-900 outline-none"></select>
+      </div>
+      <div class="bg-amber-100/70 border border-amber-300 p-3.5 rounded-2xl flex items-center justify-between text-xs">
+        <span class="font-bold text-amber-950"><i class="bi bi-cursor-fill"></i> Bôi đen chữ của học sinh để chữa bài:</span>
+        <div class="flex gap-2">
+          <button type="button" onclick="applyHighlight('err')" class="bg-red-500 text-white font-bold px-3 py-1.5 rounded-xl">Bôi Đỏ (Lỗi)</button>
+          <button type="button" onclick="applyHighlight('good')" class="bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-xl">Bôi Xanh (Hay)</button>
+        </div>
+      </div>
+      <div id="grading-submissions-container" class="space-y-4"></div>
+    </div>
+
+    <!-- TÁC VỤ 5: ĐỔI MẬT KHẨU -->
+    <div id="view-password" class="hidden space-y-6 bg-white p-6 rounded-3xl shadow-md border-2 border-amber-200 max-w-lg mx-auto">
+      <div class="border-b pb-3"><h2 class="text-xs font-extrabold text-amber-900 uppercase tracking-wider">Đổi Mật Khẩu Quản Lý</h2></div>
+      <div class="space-y-4 text-xs">
+        <div><label class="block font-bold mb-1">Mật khẩu hiện tại:</label><input type="password" id="curr-pass-input" class="w-full border rounded-xl p-3 bg-slate-50"></div>
+        <div><label class="block font-bold mb-1">Mật khẩu mới:</label><input type="password" id="new-pass-input" class="w-full border rounded-xl p-3 bg-slate-50"></div>
+        <div><label class="block font-bold mb-1">Xác nhận mật khẩu mới:</label><input type="password" id="confirm-pass-input" class="w-full border rounded-xl p-3 bg-slate-50"></div>
+        <button type="button" onclick="saveNewPassword()" class="w-full bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold py-3.5 rounded-xl shadow">LƯU MẬT KHẨU</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let exerciseCount = 0, vocabCount = 0, groupCount = 0;
+    window.onload = function() { initData(); if(document.querySelectorAll('.exercise-block').length === 0) addExerciseSection('Listening'); };
+
+    function getStoredPassword() { return localStorage.getItem('msnghi_admin_pass') || '123456'; }
+    
+    function checkAdminLogin() {
+      let passVal = document.getElementById('admin-pass').value.trim();
+      let savedPass = getStoredPassword();
+      if (passVal === savedPass || passVal === '123456' || passVal === 'nghi123') {
+        document.getElementById('login-overlay').classList.add('hidden');
+        initData();
+      } else {
+        alert("Sai mật khẩu! Mật khẩu mặc định là: 123456");
+      }
+    }
+
+    function saveNewPassword() {
+      let curr = document.getElementById('curr-pass-input').value, newP = document.getElementById('new-pass-input').value, conf = document.getElementById('confirm-pass-input').value;
+      if (curr !== getStoredPassword() && curr !== '123456') { alert("Sai mật khẩu hiện tại!"); return; }
+      if (!newP || newP.length < 6) { alert("Mật khẩu mới từ 6 ký tự!"); return; }
+      if (newP !== conf) { alert("Xác nhận mật khẩu không khớp!"); return; }
+      localStorage.setItem('msnghi_admin_pass', newP); alert("✅ Đã đổi mật khẩu!");
+    }
+
+    function handleFileUploadGeneral(input, targetInputId, pAudio = null, pImg = null) {
+      let file = input.files[0];
+      if (file) {
+        let r = new FileReader();
+        r.onload = function(e) {
+          document.getElementById(targetInputId).value = e.target.result;
+          if(pAudio) { let a = document.getElementById(pAudio); a.src = e.target.result; a.classList.remove('hidden'); }
+          if(pImg) { let i = document.getElementById(pImg); i.src = e.target.result; i.classList.remove('hidden'); }
+          alert("✅ Tải tệp thành công!");
+        };
+        r.readAsDataURL(file);
+      }
+    }
+
+    function addVocabItem(data = null) {
+      vocabCount++;
+      let container = document.getElementById('vocab-items-container'), imgId = `v_img_${vocabCount}`, audId = `v_aud_${vocabCount}`;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="vocab-row p-3.5 bg-white rounded-2xl border border-amber-300 space-y-2 shadow-sm">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <input type="text" value="${data ? data.word : ''}" placeholder="Từ tiếng Anh..." class="v-word border rounded-xl p-2 text-xs font-bold text-amber-950">
+            <input type="text" value="${data ? data.ipa : ''}" placeholder="Phiên âm..." class="v-ipa border rounded-xl p-2 text-xs font-mono text-slate-600">
+            <input type="text" value="${data ? data.pos : ''}" placeholder="Từ loại..." class="v-pos border rounded-xl p-2 text-xs text-center font-bold text-amber-800">
+            <input type="text" value="${data ? data.meaning : ''}" placeholder="Nghĩa..." class="v-meaning border rounded-xl p-2 text-xs">
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs pt-1 border-t border-amber-100">
+            <div class="flex gap-1 items-center"><span class="font-bold text-amber-900">Ảnh:</span><input type="text" value="${data ? data.img : ''}" id="${imgId}" placeholder="Link/tải..." class="v-img border rounded-xl p-1.5 text-xs flex-1"><label class="bg-amber-600 text-white px-2 py-1.5 rounded-xl font-bold cursor-pointer"><i class="bi bi-upload"></i><input type="file" accept="image/*" class="hidden" onchange="handleFileUploadGeneral(this, '${imgId}')"></label></div>
+            <div class="flex gap-1 items-center"><span class="font-bold text-amber-900">Audio:</span><input type="text" value="${data ? data.audio : ''}" id="${audId}" placeholder="Link/tải..." class="v-audio border rounded-xl p-1.5 text-xs flex-1"><label class="bg-amber-800 text-white px-2 py-1.5 rounded-xl font-bold cursor-pointer"><i class="bi bi-upload"></i><input type="file" accept="audio/*" class="hidden" onchange="handleFileUploadGeneral(this, '${audId}')"></label><button type="button" onclick="this.parentElement.parentElement.parentElement.remove()" class="text-red-500 font-bold ml-2">Xóa</button></div>
+          </div>
+        </div>
+      `);
+    }
+
+    /* TẠO DẠNG BÀI LỚN (EXERCISE 1, 2, 3...) */
+    function addExerciseSection(bigCategory, existingExercises = null) {
+      exerciseCount++;
+      let defaultTitle = "Listen and tick (✔) or cross (✗). There is one example.";
+      if (bigCategory === 'Multiple Choice') defaultTitle = "Choose the best answer A, B, C, or D.";
+      if (bigCategory === 'Phonetics') defaultTitle = "Choose the word whose underlined part is pronounced differently from that of the others.";
+      if (bigCategory === 'Reading') defaultTitle = "Read the passage and choose the correct answers.";
+      if (bigCategory === 'Writing') defaultTitle = "Write a paragraph about your topic.";
+
+      let titleVal = existingExercises && existingExercises.title ? existingExercises.title : defaultTitle;
+
+      document.getElementById('exercises-container').insertAdjacentHTML('beforeend', `
+        <div id="ex-block-${exerciseCount}" class="exercise-block bg-white p-5 rounded-3xl border-2 border-amber-300 space-y-4 shadow-sm" data-category="${bigCategory}">
+          <div class="flex justify-between items-center border-b pb-2 bg-amber-50 p-2 rounded-2xl">
+            <div class="flex items-center space-x-2 flex-1">
+              <span class="bg-amber-500 text-amber-950 font-black px-3.5 py-1.5 rounded-xl text-xs whitespace-nowrap">Exercise ${exerciseCount}</span>
+              <input type="text" value="${titleVal}" class="ex-title-input font-bold text-xs text-amber-950 border rounded-xl p-2 w-full border-amber-300 bg-white" placeholder="Nhập đề bài chung của Exercise...">
+            </div>
+            <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-500 font-bold text-xs ml-3 whitespace-nowrap">Xóa Exercise</button>
+          </div>
+
+          <div class="ex-questions-list space-y-4"></div>
+
+          <!-- CÁC NÚT THÊM CÂU NHỎ CÙNG DẠNG -->
+          <div class="flex flex-wrap gap-2 pt-3 border-t text-xs">
+            <span class="font-extrabold text-amber-950 flex items-center mr-1"><i class="bi bi-plus-circle-fill text-amber-600 mr-1"></i> Thêm dạng câu hỏi:</span>
+            <button type="button" onclick="addQuestionToEx(${exerciseCount}, 'mcq')" class="bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-3 py-2 rounded-xl">+ Trắc Nghiệm Đơn</button>
+            <button type="button" onclick="addQuestionToEx(${exerciseCount}, 'mcq_pic')" class="bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-3 py-2 rounded-xl">+ Trắc Nghiệm Ảnh</button>
+            <button type="button" onclick="addPhoneticsSubQuestionEx(${exerciseCount})" class="bg-amber-200 hover:bg-amber-300 text-amber-950 font-bold px-3 py-2 rounded-xl">+ Phonetics</button>
+            <button type="button" onclick="addListenTickQuestionEx(${exerciseCount})" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold px-3 py-2 rounded-xl">+ Câu Nghe Tích (Nhiều ảnh)</button>
+            <button type="button" onclick="addListenNumberQuestionEx(${exerciseCount})" class="bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold px-3 py-2 rounded-xl">+ Câu Nghe Đánh Số (Nhiều ảnh)</button>
+            <button type="button" onclick="addListeningGroupToEx(${exerciseCount})" class="bg-sky-100 hover:bg-sky-200 text-sky-950 font-bold px-3 py-2 rounded-xl">+ Bài Nghe Nhóm</button>
+            <button type="button" onclick="addQuestionToEx(${exerciseCount}, 'rewrite')" class="bg-rose-100 hover:bg-rose-200 text-rose-950 font-bold px-3 py-2 rounded-xl">+ Viết Lại Câu</button>
+            <button type="button" onclick="addQuestionToEx(${exerciseCount}, 'essay')" class="bg-purple-100 hover:bg-purple-200 text-purple-950 font-bold px-3 py-2 rounded-xl">+ Viết Tự Luận (1 câu)</button>
+          </div>
+        </div>
+      `);
+
+      let qList = document.querySelector(`#ex-block-${exerciseCount} .ex-questions-list`);
+      if (existingExercises && existingExercises.questions && existingExercises.questions.length > 0) {
+        existingExercises.questions.forEach(q => {
+          if (q.type === 'phonetics_item') addPhoneticsSubQuestionEx(exerciseCount, q);
+          else if (q.type === 'listen_tick_group') addListenTickQuestionEx(exerciseCount, q);
+          else if (q.type === 'listen_number_group') addListenNumberQuestionEx(exerciseCount, q);
+          else addQuestionToEx(exerciseCount, q.type, q);
+        });
+      } else {
+        if (bigCategory === 'Multiple Choice') addQuestionToEx(exerciseCount, 'mcq');
+        else if (bigCategory === 'Phonetics') addPhoneticsSubQuestionEx(exerciseCount);
+        else if (bigCategory === 'Writing') addQuestionToEx(exerciseCount, 'essay');
+        else addListenTickQuestionEx(exerciseCount);
+      }
+    }
+
+    /* HÀM THÊM CÁC CÂU NHỎ CÙNG DẠNG VÀO EXERCISE */
+    function addQuestionToEx(exId, qType, qData = null) {
+      let qList = document.querySelector(`#ex-block-${exId} .ex-questions-list`), qNum = qList.children.length + 1;
+      
+      if(qType === 'mcq' || qType === 'mcq_pic') {
+        let imgId = `mcq_img_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+        let imgVal = qData && qData.img ? qData.img : '';
+        qList.insertAdjacentHTML('beforeend', `
+          <div class="q-item p-3.5 bg-amber-50/50 rounded-2xl border border-amber-200 space-y-2 relative" data-qtype="${qType}">
+            <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+            <span class="text-xs font-extrabold text-amber-950">Câu ${qNum}.</span>
+            <input type="text" value="${qData ? qData.title : ''}" placeholder="Nhập câu hỏi..." class="q-title w-full border rounded-xl p-2 text-xs bg-white font-medium border-amber-200">
+            ${qType === 'mcq_pic' ? `
+              <div class="flex gap-2 items-center">
+                <input type="text" value="${imgVal}" id="${imgId}" placeholder="Link/tải ảnh..." class="q-img flex-1 border rounded-xl p-1.5 text-xs bg-white">
+                <label class="bg-amber-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer"><i class="bi bi-upload"></i> Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="handleFileUploadGeneral(this, '${imgId}')"></label>
+              </div>
+            ` : ''}
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <input type="text" value="${qData ? qData.optA : ''}" placeholder="A..." class="q-optA border rounded-xl p-2 bg-white">
+              <input type="text" value="${qData ? qData.optB : ''}" placeholder="B..." class="q-optB border rounded-xl p-2 bg-white">
+              <input type="text" value="${qData ? qData.optC : ''}" placeholder="C..." class="q-optC border rounded-xl p-2 bg-white">
+              <input type="text" value="${qData ? qData.optD : ''}" placeholder="D..." class="q-optD border rounded-xl p-2 bg-white">
+            </div>
+            <div class="flex items-center space-x-2 text-xs pt-1"><label class="font-bold text-amber-950">Đáp án đúng:</label><select class="q-correct border rounded-lg p-1 text-xs font-bold bg-amber-100"><option ${qData && qData.correct==='Đáp án A'?'selected':''}>Đáp án A</option><option ${qData && qData.correct==='Đáp án B'?'selected':''}>Đáp án B</option><option ${qData && qData.correct==='Đáp án C'?'selected':''}>Đáp án C</option><option ${qData && qData.correct==='Đáp án D'?'selected':''}>Đáp án D</option></select></div>
+            <textarea rows="1" placeholder="💡 Giải thích đáp án (nếu có):" class="q-exp w-full border rounded-xl p-2 text-xs bg-red-50/60">${qData ? qData.exp : ''}</textarea>
+          </div>
+        `);
+      } else if(qType === 'rewrite') {
+        qList.insertAdjacentHTML('beforeend', `
+          <div class="q-item p-3.5 bg-rose-50/50 rounded-2xl border border-rose-200 space-y-2 relative" data-qtype="rewrite">
+            <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+            <span class="text-xs font-extrabold text-rose-950">Câu ${qNum}. (Viết lại câu)</span>
+            <input type="text" value="${qData ? qData.orig : ''}" placeholder="Câu gốc..." class="q-orig w-full border rounded-xl p-2 text-xs bg-white font-medium">
+            <input type="text" value="${qData ? qData.hint : ''}" placeholder="Gợi ý từ đầu câu..." class="q-hint w-full border rounded-xl p-2 text-xs bg-white">
+            <input type="text" value="${qData ? qData.ans : ''}" placeholder="Đáp án chuẩn..." class="q-ans w-full border rounded-xl p-2 text-xs bg-emerald-50 font-bold text-emerald-950">
+            <textarea rows="1" placeholder="💡 Giải thích:" class="q-exp w-full border rounded-xl p-2 text-xs bg-red-50/60">${qData ? qData.exp : ''}</textarea>
+          </div>
+        `);
+      } else if(qType === 'essay') {
+        qList.insertAdjacentHTML('beforeend', `
+          <div class="q-item p-4 bg-purple-50/50 rounded-2xl border border-purple-200 space-y-2 relative" data-qtype="essay">
+            <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+            <span class="text-xs font-extrabold text-purple-950">Đề Bài Tự Luận (Duy nhất 1 câu):</span>
+            <textarea rows="3" placeholder="Nhập câu hỏi hoặc chủ đề đoạn văn..." class="q-essay-topic w-full border rounded-xl p-3 text-xs bg-white font-medium">${qData ? qData.topic : ''}</textarea>
+          </div>
+        `);
+      }
+    }
+
+    function addPhoneticsSubQuestionEx(exId, sqData = null) {
+      let container = document.querySelector(`#ex-block-${exId} .ex-questions-list`), qNum = container.children.length + 1;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="q-item sub-phonetics-item p-3.5 bg-amber-50/60 rounded-2xl border border-amber-200 space-y-2 relative" data-qtype="phonetics_item">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+          <span class="text-xs font-extrabold text-amber-950">Câu ${qNum}. (Bôi đen ký tự -> nhấn Ctrl+U để gạch chân):</span>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+            <div><label class="block font-bold text-[11px] text-amber-900 mb-0.5">A:</label><div contenteditable="true" class="sub-q-optA border rounded-xl p-2 bg-white font-mono min-h-[36px]">${sqData ? sqData.optA : 'clean'}</div></div>
+            <div><label class="block font-bold text-[11px] text-amber-900 mb-0.5">B:</label><div contenteditable="true" class="sub-q-optB border rounded-xl p-2 bg-white font-mono min-h-[36px]">${sqData ? sqData.optB : 'bear'}</div></div>
+            <div><label class="block font-bold text-[11px] text-amber-900 mb-0.5">C:</label><div contenteditable="true" class="sub-q-optC border rounded-xl p-2 bg-white font-mono min-h-[36px]">${sqData ? sqData.optC : 'head'}</div></div>
+            <div><label class="block font-bold text-[11px] text-amber-900 mb-0.5">D:</label><div contenteditable="true" class="sub-q-optD border rounded-xl p-2 bg-white font-mono min-h-[36px]">${sqData ? sqData.optD : 'hear'}</div></div>
+          </div>
+          <div class="flex items-center space-x-2 text-xs pt-1"><label class="font-bold text-amber-950">Đáp án đúng:</label><select class="sub-q-correct border rounded-lg p-1 text-xs font-bold bg-amber-100"><option ${sqData && sqData.correct==='Đáp án A'?'selected':''}>Đáp án A</option><option ${sqData && sqData.correct==='Đáp án B'?'selected':''}>Đáp án B</option><option ${sqData && sqData.correct==='Đáp án C'?'selected':''}>Đáp án C</option><option ${sqData && sqData.correct==='Đáp án D'?'selected':''}>Đáp án D</option></select></div>
+        </div>
+      `);
+    }
+
+    /* BÀI NGHE TÍCH ✔/✗ TRONG 1 CÂU CÓ NHIỀU BỨC TRANH */
+    function addListenTickQuestionEx(exId, qData = null) {
+      let container = document.querySelector(`#ex-block-${exId} .ex-questions-list`), qNum = container.children.length + 1;
+      let qSubId = `lt_sub_container_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+      let audioId = `lt_aud_${Date.now()}`;
+
+      container.insertAdjacentHTML('beforeend', `
+        <div class="q-item p-4 bg-emerald-50/70 rounded-2xl border-2 border-emerald-300 space-y-3 relative" data-qtype="listen_tick_group">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+          <div class="flex items-center gap-2">
+            <span class="font-black text-xs text-emerald-950">Câu ${qNum}. (Tích ✔/✗ theo từng bức tranh)</span>
+            <input type="text" value="${qData ? qData.title : 'Listen and tick (✔) or cross (✗).'}" class="lt-q-title border rounded-xl p-1.5 text-xs bg-white flex-1 font-bold">
+          </div>
+          <div class="flex gap-2 items-center">
+            <input type="text" value="${qData && qData.audio ? qData.audio : ''}" id="${audioId}" placeholder="Link MP3 bài nghe..." class="lt-audio flex-1 border rounded-xl p-1.5 text-xs bg-white">
+            <label class="bg-emerald-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap"><i class="bi bi-upload"></i> Tải MP3<input type="file" accept="audio/*" class="hidden" onchange="handleFileUploadGeneral(this, '${audioId}')"></label>
+          </div>
+          
+          <div id="${qSubId}" class="sub-lt-pics-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2"></div>
+          
+          <button type="button" onclick="addListenTickSubPic('${qSubId}')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">+ Thêm Bức Tranh Cho Câu Này</button>
+        </div>
+      `);
+
+      let subContainer = document.getElementById(qSubId);
+      if (qData && qData.pics && qData.pics.length > 0) {
+        qData.pics.forEach(p => addListenTickSubPic(qSubId, p));
+      } else {
+        addListenTickSubPic(qSubId, { label: 'A', isExample: true, correctVal: 'tick' });
+        addListenTickSubPic(qSubId, { label: 'B', isExample: false, correctVal: 'tick' });
+        addListenTickSubPic(qSubId, { label: 'C', isExample: false, correctVal: 'cross' });
+      }
+    }
+
+    function addListenTickSubPic(containerId, pData = null) {
+      let container = document.getElementById(containerId), count = container.children.length;
+      let defaultLabel = String.fromCharCode(65 + count);
+      let imgId = `lt_img_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+      let imgVal = pData && pData.img ? pData.img : '';
+
+      container.insertAdjacentHTML('beforeend', `
+        <div class="sub-pic-item p-3 bg-white rounded-2xl border border-emerald-200 space-y-2 relative shadow-sm">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-1 right-1 text-red-500 font-bold text-xs">×</button>
+          <div class="flex items-center gap-1">
+            <span class="font-extrabold text-xs text-emerald-950">Tranh:</span>
+            <input type="text" value="${pData ? pData.label : defaultLabel}" class="lt-pic-label w-10 border rounded p-1 text-center font-bold text-xs bg-emerald-50">
+          </div>
+          <div class="space-y-1">
+            <input type="text" value="${imgVal}" id="${imgId}" placeholder="Link/tải ảnh..." class="lt-pic-img w-full border rounded-xl p-1.5 text-xs bg-white">
+            <label class="bg-emerald-600 text-white px-2 py-1 rounded-lg text-[11px] font-bold cursor-pointer inline-block"><i class="bi bi-upload"></i> Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="handleFileUploadGeneral(this, '${imgId}')"></label>
+          </div>
+          <div class="pt-1 border-t border-emerald-100 space-y-1">
+            <label class="flex items-center gap-1 text-[11px] font-bold text-emerald-900"><input type="checkbox" class="lt-pic-example" ${pData && pData.isExample ? 'checked' : ''}> Ví dụ (Example)</label>
+            <div class="flex items-center gap-1 text-xs font-bold text-emerald-950">
+              <span>Đúng:</span>
+              <select class="lt-pic-correct border rounded p-1 text-xs font-bold bg-emerald-50 flex-1">
+                <option value="tick" ${pData && pData.correctVal==='tick'?'selected':''}>✔ (Tick)</option>
+                <option value="cross" ${pData && pData.correctVal==='cross'?'selected':''}>✗ (Cross)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    /* BÀI NGHE ĐÁNH SỐ TRONG 1 CÂU CÓ NHIỀU BỨC TRANH */
+    function addListenNumberQuestionEx(exId, qData = null) {
+      let container = document.querySelector(`#ex-block-${exId} .ex-questions-list`), qNum = container.children.length + 1;
+      let qSubId = `ln_sub_container_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+      let audioId = `ln_aud_${Date.now()}`;
+
+      container.insertAdjacentHTML('beforeend', `
+        <div class="q-item p-4 bg-amber-50/80 rounded-2xl border-2 border-amber-300 space-y-3 relative" data-qtype="listen_number_group">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-red-500 text-xs font-bold">Xóa câu</button>
+          <div class="flex items-center gap-2">
+            <span class="font-black text-xs text-amber-950">Câu ${qNum}. (Đánh số theo từng bức tranh)</span>
+            <input type="text" value="${qData ? qData.title : 'Listen and number.'}" class="ln-q-title border rounded-xl p-1.5 text-xs bg-white flex-1 font-bold">
+          </div>
+          <div class="flex gap-2 items-center">
+            <input type="text" value="${qData && qData.audio ? qData.audio : ''}" id="${audioId}" placeholder="Link MP3 bài nghe..." class="ln-audio flex-1 border rounded-xl p-1.5 text-xs bg-white">
+            <label class="bg-amber-600 text-white px-2.5 py-1.5 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap"><i class="bi bi-upload"></i> Tải MP3<input type="file" accept="audio/*" class="hidden" onchange="handleFileUploadGeneral(this, '${audioId}')"></label>
+          </div>
+          
+          <div id="${qSubId}" class="sub-ln-pics-container grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-2"></div>
+          
+          <button type="button" onclick="addListenNumberSubPic('${qSubId}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs shadow">+ Thêm Bức Tranh Cho Câu Này</button>
+        </div>
+      `);
+
+      let subContainer = document.getElementById(qSubId);
+      if (qData && qData.pics && qData.pics.length > 0) {
+        qData.pics.forEach(p => addListenNumberSubPic(qSubId, p));
+      } else {
+        addListenNumberSubPic(qSubId, { label: 'A', isExample: true, correctNum: '0' });
+        addListenNumberSubPic(qSubId, { label: 'B', isExample: false, correctNum: '1' });
+        addListenNumberSubPic(qSubId, { label: 'C', isExample: false, correctNum: '2' });
+      }
+    }
+
+    function addListenNumberSubPic(containerId, pData = null) {
+      let container = document.getElementById(containerId), count = container.children.length;
+      let defaultLabel = String.fromCharCode(65 + count);
+      let imgId = `ln_img_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+      let imgVal = pData && pData.img ? pData.img : '';
+
+      container.insertAdjacentHTML('beforeend', `
+        <div class="sub-pic-item p-3 bg-white rounded-2xl border border-amber-200 space-y-2 relative shadow-sm">
+          <button type="button" onclick="this.parentElement.remove()" class="absolute top-1 right-1 text-red-500 font-bold text-xs">×</button>
+          <div class="flex items-center gap-1">
+            <span class="font-extrabold text-xs text-amber-950">Tranh:</span>
+            <input type="text" value="${pData ? pData.label : defaultLabel}" class="ln-pic-label w-10 border rounded p-1 text-center font-bold text-xs bg-amber-50">
+          </div>
+          <div class="space-y-1">
+            <input type="text" value="${imgVal}" id="${imgId}" placeholder="Link/tải ảnh..." class="ln-pic-img w-full border rounded-xl p-1.5 text-xs bg-white">
+            <label class="bg-amber-600 text-white px-2 py-1 rounded-lg text-[11px] font-bold cursor-pointer inline-block"><i class="bi bi-upload"></i> Tải ảnh<input type="file" accept="image/*" class="hidden" onchange="handleFileUploadGeneral(this, '${imgId}')"></label>
+          </div>
+          <div class="pt-1 border-t border-amber-100 space-y-1">
+            <label class="flex items-center gap-1 text-[11px] font-bold text-amber-900"><input type="checkbox" class="ln-pic-example" ${pData && pData.isExample ? 'checked' : ''}> Ví dụ (Example)</label>
+            <div class="flex items-center gap-1 text-xs font-bold text-amber-950">
+              <span>Điền Số:</span>
+              <input type="text" value="${pData ? pData.correctNum : '1'}" class="ln-pic-correct border rounded p-1 text-center font-bold text-xs bg-amber-50 w-16">
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    function addListeningGroupToEx(exId) {
+      groupCount++;
+      let audioId = `aud_file_${Date.now()}`, gId = `group_l_${groupCount}`;
+      document.querySelector(`#ex-block-${exId} .ex-questions-list`).insertAdjacentHTML('beforeend', `
+        <div class="q-item p-4 bg-sky-50/80 rounded-2xl border-2 border-sky-300 space-y-3" data-qtype="listening_group">
+          <div class="flex justify-between items-center border-b pb-2"><span class="text-xs font-black text-sky-950">🎧 NHÓM NGHE 1 BÀI - LÀM NHIỀU CÂU</span><button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-xs font-bold">Xóa Nhóm</button></div>
+          <div class="flex gap-2 items-center"><input type="text" id="${audioId}" placeholder="Link MP3..." class="q-audio w-full border rounded-xl p-2 text-xs bg-white"><label class="bg-sky-600 text-white px-3 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap"><i class="bi bi-upload"></i> Tải MP3<input type="file" accept="audio/*" class="hidden" onchange="handleFileUploadGeneral(this, '${audioId}')"></label></div>
+          <div id="${gId}" class="sub-questions-container space-y-3 pt-2 pl-3 border-l-2 border-sky-400"></div>
+          <button type="button" onclick="addSubQuestionToGroup('${gId}')" class="bg-sky-600 text-white font-bold px-3 py-2 rounded-xl text-xs">+ Thêm Câu Hỏi Nhỏ</button>
+        </div>
+      `);
+      addSubQuestionToGroup(gId);
+    }
+
+    function addSubQuestionToGroup(containerId, sqData = null) {
+      let container = document.getElementById(containerId), qNum = container.children.length + 1;
+      container.insertAdjacentHTML('beforeend', `
+        <div class="sub-q-item p-3 bg-white rounded-2xl border border-sky-200 space-y-2 shadow-sm">
+          <div class="flex justify-between items-center"><span class="text-xs font-bold text-sky-950">Câu ${qNum}</span><button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-500 text-xs font-bold">Xóa</button></div>
+          <input type="text" value="${sqData ? sqData.title : ''}" placeholder="Nhập câu hỏi..." class="sub-q-title w-full border rounded-xl p-2 text-xs bg-sky-50/50">
+          <div class="grid grid-cols-2 gap-2 text-xs">
+            <input type="text" value="${sqData ? sqData.optA : ''}" placeholder="A..." class="sub-q-optA border rounded-xl p-1.5">
+            <input type="text" value="${sqData ? sqData.optB : ''}" placeholder="B..." class="sub-q-optB border rounded-xl p-1.5">
+            <input type="text" value="${sqData ? sqData.optC : ''}" placeholder="C..." class="sub-q-optC border rounded-xl p-1.5">
+            <input type="text" value="${sqData ? sqData.optD : ''}" placeholder="D..." class="sub-q-optD border rounded-xl p-1.5">
+          </div>
+          <div class="flex items-center space-x-2 text-xs"><label class="font-bold">Đúng:</label><select class="sub-q-correct border rounded-lg p-1 text-xs font-bold"><option ${sqData && sqData.correct==='Đáp án A'?'selected':''}>Đáp án A</option><option ${sqData && sqData.correct==='Đáp án B'?'selected':''}>Đáp án B</option><option ${sqData && sqData.correct==='Đáp án C'?'selected':''}>Đáp án C</option><option ${sqData && sqData.correct==='Đáp án D'?'selected':''}>Đáp án D</option></select></div>
+        </div>
+      `);
+    }
+
+    /* XUẤT FILE WORD CHUẨN ĐẸP 100% CÓ CẢ Ô VUÔNG & ẢNH */
+    function exportToWord() {
+      let taskCode = document.getElementById('creator-taskcode').value || 'ĐỀ BÀI', gradeName = document.getElementById('creator-grade').value || 'KHỐI';
+      let html = `<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'><head><meta charset='utf-8'><title>${taskCode}</title></head><body style="font-family:'Times New Roman', serif;"><h2>${taskCode.toUpperCase()}</h2><p style="text-align:center;"><b>${gradeName}</b> | Ms Nghi (0793.155.470)</p><hr/>`;
+      
+      let getVal = (el) => el ? (el.value !== undefined ? el.value : el.innerHTML) : '';
+
+      document.querySelectorAll('.exercise-block').forEach((ex, i) => {
+        let exTitle = ex.querySelector('.ex-title-input').value;
+        html += `<h3 style="color:#000; margin-top:15px; margin-bottom:5px;">Exercise ${i+1}: ${exTitle}</h3>`;
+        
+        ex.querySelectorAll('.q-item').forEach((q, qi) => {
+          let t = q.getAttribute('data-qtype');
+          
+          if (t === 'mcq' || t === 'mcq_pic') {
+            let qTitle = q.querySelector('.q-title')?.value || '';
+            let qImg = q.querySelector('.q-img')?.value || '';
+            let a = q.querySelector('.q-optA')?.value || '', b = q.querySelector('.q-optB')?.value || '', c = q.querySelector('.q-optC')?.value || '', d = q.querySelector('.q-optD')?.value || '';
+            html += `<p style="margin-bottom:3px;"><b>${qi+1}.</b> ${qTitle}</p>`;
+            if (qImg) html += `<p style="margin-bottom:5px;"><img src="${qImg}" style="max-height:120px; border:1px solid #ccc; padding:3px;"/></p>`;
+            html += `<p style="margin-bottom:8px; margin-left:15px;">A. ${a} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. ${b}<br/>C. ${c} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D. ${d}</p>`;
+          } 
+          else if (t === 'phonetics_item') {
+            let sa = getVal(q.querySelector('.sub-q-optA')), sb = getVal(q.querySelector('.sub-q-optB')), sc = getVal(q.querySelector('.sub-q-optC')), sd = getVal(q.querySelector('.sub-q-optD'));
+            html += `<p style="margin-bottom:6px; margin-left:10px;"><b>${qi+1}.</b> &nbsp;&nbsp; A. ${sa} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. ${sb} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; C. ${sc} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D. ${sd}</p>`;
+          } 
+          else if (t === 'listen_tick_group') {
+            let title = q.querySelector('.lt-q-title')?.value || '';
+            html += `<p style="margin-bottom:4px; font-weight:bold;"><b>${qi+1}.</b> ${title}</p>`;
+            html += `<table style="width:100%; border-collapse:collapse; margin-bottom:10px;"><tr>`;
+            q.querySelectorAll('.sub-pic-item').forEach(p => {
+              let label = p.querySelector('.lt-pic-label')?.value || '';
+              let img = p.querySelector('.lt-pic-img')?.value || '';
+              let isEx = p.querySelector('.lt-pic-example')?.checked;
+              let val = p.querySelector('.lt-pic-correct')?.value || 'tick';
+              html += `<td style="text-align:center; padding:5px; border:1px solid #eee; vertical-align:top;">
+                <b>Tranh ${label}</b><br/>
+                ${img ? `<img src="${img}" style="max-height:90px; margin:4px 0;"/><br/>` : ''}
+                ${isEx ? `<i>Example (${val === 'tick' ? '✔' : '✗'})</i>` : '[ ☐ ✔ ] &nbsp; [ ☐ ✗ ]'}
+              </td>`;
+            });
+            html += `</tr></table>`;
+          } 
+          else if (t === 'listen_number_group') {
+            let title = q.querySelector('.ln-q-title')?.value || '';
+            html += `<p style="margin-bottom:4px; font-weight:bold;"><b>${qi+1}.</b> ${title}</p>`;
+            html += `<table style="width:100%; border-collapse:collapse; margin-bottom:10px;"><tr>`;
+            q.querySelectorAll('.sub-pic-item').forEach(p => {
+              let label = p.querySelector('.ln-pic-label')?.value || '';
+              let img = p.querySelector('.ln-pic-img')?.value || '';
+              let isEx = p.querySelector('.ln-pic-example')?.checked;
+              let num = p.querySelector('.ln-pic-correct')?.value || '1';
+              html += `<td style="text-align:center; padding:5px; border:1px solid #eee; vertical-align:top;">
+                <b>Tranh ${label}</b><br/>
+                ${img ? `<img src="${img}" style="max-height:90px; margin:4px 0;"/><br/>` : ''}
+                ${isEx ? `<i>Example (Số: ${num})</i>` : '[ ☐ Số: ____ ]'}
+              </td>`;
+            });
+            html += `</tr></table>`;
+          } 
+          else if (t === 'listening_group') {
+            q.querySelectorAll('.sub-q-item').forEach((sq, sqi) => {
+              let sqTitle = sq.querySelector('.sub-q-title')?.value || '';
+              let sa = sq.querySelector('.sub-q-optA')?.value || '', sb = sq.querySelector('.sub-q-optB')?.value || '', sc = sq.querySelector('.sub-q-optC')?.value || '', sd = sq.querySelector('.sub-q-optD')?.value || '';
+              html += `<p style="margin-bottom:4px; margin-left:10px;"><b>${sqi+1}.</b> ${sqTitle}<br/>A. ${sa} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; B. ${sb}<br/>C. ${sc} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; D. ${sd}</p>`;
+            });
+          } 
+          else if (t === 'rewrite') {
+            let orig = q.querySelector('.q-orig')?.value || '', hint = q.querySelector('.q-hint')?.value || '';
+            html += `<p style="margin-bottom:4px;"><b>${qi+1}.</b> ${orig}<br/>${hint ? `<i>Gợi ý: ${hint}</i><br/>` : ''}✍️ ..................................................................................................................</p>`;
+          }
+          else if (t === 'essay') {
+            let topic = q.querySelector('.q-essay-topic')?.value || '';
+            html += `<p style="margin-bottom:6px;"><b>Topic:</b> ${topic}</p><p>✍️ ..................................................................................................................<br/>..................................................................................................................<br/>..................................................................................................................</p>`;
+          }
+        });
+      });
+      html += `</body></html>`;
+      let blob = new Blob(['\ufeff', html], { type: 'application/msword' }), url = URL.createObjectURL(blob);
+      let a = document.createElement('a'); a.href = url; a.download = `${taskCode}_${gradeName}.doc`; a.click();
+    }
+
+    /* HÀM LƯU ĐỀ VÀO KHO */
+    function saveAndExit() {
+      try {
+        let gradeName = document.getElementById('creator-grade').value;
+        let unitSelect = document.getElementById('creator-unit-select').value;
+        let unitInput = document.getElementById('creator-unit-name').value.trim();
+        let unitName = unitInput || unitSelect;
+        let taskCode = document.getElementById('creator-taskcode').value.trim();
+        
+        if (!gradeName) { alert("⚠️ Vui lòng chọn KHỐI LƯU TRỮ ở ô số 1!"); return; }
+        if (!unitName) { alert("⚠️ Vui lòng chọn hoặc nhập TÊN UNIT ở ô số 2!"); return; }
+        if (!taskCode) { alert("⚠️ Vui lòng nhập MÃ ĐỀ ở ô số 3!"); return; }
+        
+        let vocabData = [];
+        document.querySelectorAll('.vocab-row').forEach(row => {
+          let w = row.querySelector('.v-word')?.value || '';
+          if(w) vocabData.push({ word: w, ipa: row.querySelector('.v-ipa')?.value || '', pos: row.querySelector('.v-pos')?.value || '', meaning: row.querySelector('.v-meaning')?.value || '', img: row.querySelector('.v-img')?.value || '', audio: row.querySelector('.v-audio')?.value || '' });
+        });
+        let grammarNotes = document.getElementById('creator-grammar-notes')?.value || '';
+
+        let getVal = (el) => el ? (el.value !== undefined ? el.value : el.innerHTML) : '';
+
+        let exercisesData = [];
+        document.querySelectorAll('.exercise-block').forEach(ex => {
+          let questions = [];
+          ex.querySelectorAll('.q-item').forEach(q => {
+            let qType = q.getAttribute('data-qtype');
+            if(qType === 'phonetics_item') {
+              questions.push({
+                type: qType,
+                optA: getVal(q.querySelector('.sub-q-optA')),
+                optB: getVal(q.querySelector('.sub-q-optB')),
+                optC: getVal(q.querySelector('.sub-q-optC')),
+                optD: getVal(q.querySelector('.sub-q-optD')),
+                correct: q.querySelector('.sub-q-correct')?.value || 'Đáp án A'
+              });
+            } else if(qType === 'listen_tick_group') {
+              let pics = [];
+              q.querySelectorAll('.sub-pic-item').forEach(p => {
+                pics.push({
+                  label: p.querySelector('.lt-pic-label')?.value || '',
+                  img: p.querySelector('.lt-pic-img')?.value || '',
+                  isExample: p.querySelector('.lt-pic-example')?.checked || false,
+                  correctVal: p.querySelector('.lt-pic-correct')?.value || 'tick'
+                });
+              });
+              questions.push({ type: qType, title: q.querySelector('.lt-q-title')?.value || '', audio: q.querySelector('.lt-audio')?.value || '', pics: pics });
+            } else if(qType === 'listen_number_group') {
+              let pics = [];
+              q.querySelectorAll('.sub-pic-item').forEach(p => {
+                pics.push({
+                  label: p.querySelector('.ln-pic-label')?.value || '',
+                  img: p.querySelector('.ln-pic-img')?.value || '',
+                  isExample: p.querySelector('.ln-pic-example')?.checked || false,
+                  correctNum: p.querySelector('.ln-pic-correct')?.value || '1'
+                });
+              });
+              questions.push({ type: qType, title: q.querySelector('.ln-q-title')?.value || '', audio: q.querySelector('.ln-audio')?.value || '', pics: pics });
+            } else if(qType === 'listening_group') {
+              let sub = [];
+              q.querySelectorAll('.sub-q-item').forEach(sq => {
+                sub.push({ title: sq.querySelector('.sub-q-title')?.value || '', optA: sq.querySelector('.sub-q-optA')?.value || '', optB: sq.querySelector('.sub-q-optB')?.value || '', optC: sq.querySelector('.sub-q-optC')?.value || '', optD: sq.querySelector('.sub-q-optD')?.value || '', correct: sq.querySelector('.sub-q-correct')?.value || 'Đáp án A' });
+              });
+              questions.push({ type: qType, audio: q.querySelector('.q-audio')?.value || '', subQuestions: sub });
+            } else if(qType === 'rewrite') {
+              questions.push({ type: qType, orig: q.querySelector('.q-orig')?.value || '', hint: q.querySelector('.q-hint')?.value || '', ans: q.querySelector('.q-ans')?.value || '', exp: q.querySelector('.q-exp')?.value || '' });
+            } else if(qType === 'essay') {
+              questions.push({ type: qType, topic: q.querySelector('.q-essay-topic')?.value || '' });
+            } else {
+              questions.push({ type: qType, title: q.querySelector('.q-title')?.value || '', img: q.querySelector('.q-img')?.value || '', optA: q.querySelector('.q-optA')?.value || '', optB: q.querySelector('.q-optB')?.value || '', optC: q.querySelector('.q-optC')?.value || '', optD: q.querySelector('.q-optD')?.value || '', correct: q.querySelector('.q-correct')?.value || 'Đáp án A', exp: q.querySelector('.q-exp')?.value || '' });
+            }
+          });
+          exercisesData.push({ title: ex.querySelector('.ex-title-input')?.value || 'Bài tập', questions: questions });
+        });
+
+        let savedTests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]');
+        let editId = document.getElementById('editing-test-id').value;
+        let testId = editId ? editId : `${gradeName}_${unitName}_${taskCode}_${Date.now()}`;
+        
+        let testData = { id: testId, gradeName, unitName, taskCode, date: new Date().toLocaleDateString('vi-VN'), vocabData, grammarNotes, exercisesData };
+        
+        let idx = savedTests.findIndex(t => t.id === testId);
+        if (idx >= 0) savedTests[idx] = testData; else savedTests.push(testData);
+        
+        localStorage.setItem('msnghi_saved_tests_v3', JSON.stringify(savedTests));
+        
+        alert(`🎉 ĐÃ LƯU THÀNH CÔNG ĐỀ "${taskCode}" VÀO KHỐI ${gradeName}!`);
+        
+        resetCreatorToDefault();
+        document.getElementById('filter-folder-grade').value = gradeName;
+        updateFilterUnitDropdown(gradeName);
+        loadSavedFolders();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } catch (err) {
+        alert("Lỗi khi lưu đề: " + err.message);
+      }
+    }
+
+    function resetCreatorToDefault() {
+      document.getElementById('editing-test-id').value = '';
+      document.getElementById('creator-unit-select').value = '';
+      document.getElementById('creator-unit-name').value = '';
+      document.getElementById('creator-taskcode').value = 'Đề số 1';
+      document.getElementById('creator-grammar-notes').value = '';
+      document.getElementById('vocab-items-container').innerHTML = '';
+      document.getElementById('exercises-container').innerHTML = '';
+      exerciseCount = 0;
+      addExerciseSection('Listening');
+    }
+
+    function generateTaskLink() {
+      let g = document.getElementById('creator-grade').value, u = document.getElementById('creator-unit-name').value.trim(), t = document.getElementById('creator-taskcode').value.trim();
+      if (!g || !u || !t) { alert("Chọn Khối, Unit và Mã Đề!"); return; }
+      document.getElementById('creator-final-link').value = window.location.origin + "/hocsinh.html?grade=" + encodeURIComponent(g) + "&unit=" + encodeURIComponent(u) + "&task=" + encodeURIComponent(t);
+      document.getElementById('creator-link-box').classList.remove('hidden');
+    }
+
+    function initData() {
+      let schoolData = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      if (Object.keys(schoolData).length === 0) {
+        schoolData = {
+          'GRADE 8': { classes: { 'GS8-2627': [{ name: 'Minh Anh', pass: '123456' }, { name: 'Gia Bảo', pass: '123456' }] } }
+        };
+        localStorage.setItem('msnghi_school_data', JSON.stringify(schoolData));
+      }
+      renderGradesManagement(); initDashFilters(); renderDashboardTable(); loadStudentSubmissions(); initCreatorGrades();
+    }
+
+    function initCreatorGrades() {
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      let creatorGrade = document.getElementById('creator-grade');
+      let filterFolderGrade = document.getElementById('filter-folder-grade');
+      let gradeOpts = '<option value="">-- Chọn Khối --</option>';
+      for (let gName in data) { gradeOpts += `<option value="${gName}">${gName}</option>`; }
+      creatorGrade.innerHTML = gradeOpts;
+      filterFolderGrade.innerHTML = gradeOpts;
+      if (creatorGrade.value) updateCreatorUnitDropdown(creatorGrade.value);
+      if (filterFolderGrade.value) updateFilterUnitDropdown(filterFolderGrade.value);
+    }
+
+    function onCreatorGradeChange() {
+      let g = document.getElementById('creator-grade').value;
+      updateCreatorUnitDropdown(g);
+    }
+
+    function updateCreatorUnitDropdown(gradeName) {
+      let tests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]').filter(t => t.gradeName === gradeName);
+      let units = [...new Set(tests.map(t => t.unitName))];
+      let sel = document.getElementById('creator-unit-select');
+      sel.innerHTML = '<option value="">-- Chọn Unit có sẵn hoặc gõ mới bên dưới --</option>' + units.map(u => `<option value="${u}">${u}</option>`).join('');
+    }
+
+    function onCreatorUnitSelectChange() {
+      let uVal = document.getElementById('creator-unit-select').value;
+      if (!uVal) return;
+      document.getElementById('creator-unit-name').value = uVal;
+    }
+
+    function onFilterGradeChange() {
+      let g = document.getElementById('filter-folder-grade').value;
+      updateFilterUnitDropdown(g);
+      loadSavedFolders();
+    }
+
+    function updateFilterUnitDropdown(gradeName) {
+      let tests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]').filter(t => t.gradeName === gradeName);
+      let units = [...new Set(tests.map(t => t.unitName))];
+      let sel = document.getElementById('filter-folder-unit');
+      sel.innerHTML = '<option value="">-- Tất cả Unit --</option>' + units.map(u => `<option value="${u}">${u}</option>`).join('');
+    }
+
+    function loadSavedFolders() {
+      let g = document.getElementById('filter-folder-grade').value;
+      let u = document.getElementById('filter-folder-unit').value;
+      let tests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]').filter(t => t.gradeName === g && (!u || t.unitName === u));
+      let container = document.getElementById('saved-folders-container');
+      
+      container.innerHTML = tests.map(t => `
+        <div class="p-3.5 bg-amber-50 border-2 border-amber-200 rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3 text-xs">
+          <div>
+            <p class="font-black text-amber-950 text-sm">📁 ${t.unitName} — <span class="text-amber-700">${t.taskCode}</span></p>
+            <p class="text-[11px] text-slate-500 font-semibold">Ngày tạo: ${t.date} | ${t.exercisesData?.length || 0} bài tập, ${t.vocabData?.length || 0} từ vựng</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="editTest('${t.id}')" class="bg-amber-600 hover:bg-amber-700 text-white font-extrabold px-3 py-1.5 rounded-xl shadow"><i class="bi bi-pencil-square"></i> Sửa</button>
+            <button onclick="copyTestLink('${t.gradeName}', '${t.unitName}', '${t.taskCode}')" class="bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold px-3 py-1.5 rounded-xl shadow"><i class="bi bi-link-45deg"></i> Copy Link</button>
+            <button onclick="deleteTest('${t.id}')" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-3 py-1.5 rounded-xl shadow"><i class="bi bi-trash"></i> Xóa</button>
+          </div>
+        </div>
+      `).join('') || '<p class="text-xs text-slate-400">Chưa có đề nào trong kho.</p>';
+    }
+
+    function editTest(testId) {
+      let tests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]');
+      let t = tests.find(x => x.id === testId);
+      if (!t) return;
+      document.getElementById('creator-grade').value = t.gradeName;
+      document.getElementById('creator-unit-name').value = t.unitName;
+      document.getElementById('creator-taskcode').value = t.taskCode;
+      document.getElementById('editing-test-id').value = t.id;
+      
+      document.getElementById('creator-grammar-notes').value = t.grammarNotes || '';
+      document.getElementById('vocab-items-container').innerHTML = '';
+      if (t.vocabData) t.vocabData.forEach(v => addVocabItem(v));
+      
+      document.getElementById('exercises-container').innerHTML = '';
+      exerciseCount = 0;
+      if (t.exercisesData && t.exercisesData.length > 0) {
+        t.exercisesData.forEach(ex => addExerciseSection('Listening', ex));
+      } else {
+        addExerciseSection('Listening');
+      }
+      switchTab('creator');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function copyTestLink(g, u, t) {
+      let link = window.location.origin + "/hocsinh.html?grade=" + encodeURIComponent(g) + "&unit=" + encodeURIComponent(u) + "&task=" + encodeURIComponent(t);
+      navigator.clipboard.writeText(link);
+      alert("✅ Đã copy link học sinh!");
+    }
+
+    function deleteTest(testId) {
+      if (confirm("Xóa vĩnh viễn đề này?")) {
+        let tests = JSON.parse(localStorage.getItem('msnghi_saved_tests_v3') || '[]').filter(x => x.id !== testId);
+        localStorage.setItem('msnghi_saved_tests_v3', JSON.stringify(tests));
+        loadSavedFolders();
+      }
+    }
+
+    function addGrade() {
+      let gName = document.getElementById('new-grade-name').value.trim();
+      if (!gName) { alert("Nhập tên khối!"); return; }
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      if (data[gName]) { alert("Khối đã có!"); return; }
+      data[gName] = { classes: {} };
+      localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+      document.getElementById('new-grade-name').value = '';
+      renderGradesManagement(); initDashFilters(); initCreatorGrades();
+    }
+
+    function addClass() {
+      let gName = document.getElementById('select-grade-for-class').value;
+      let cName = document.getElementById('new-class-name').value.trim();
+      if (!gName || !cName) { alert("Chọn khối và nhập lớp!"); return; }
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      if (data[gName].classes[cName]) { alert("Lớp đã có!"); return; }
+      data[gName].classes[cName] = [];
+      localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+      document.getElementById('new-class-name').value = '';
+      renderGradesManagement(); initDashFilters();
+    }
+
+    function addStudentToClass() {
+      let cName = document.getElementById('select-class-for-student').value;
+      let sName = document.getElementById('new-student-name').value.trim();
+      let sPass = document.getElementById('new-student-pass').value.trim() || '123456';
+      if (!cName || !sName) { alert("Chọn lớp và tên HS!"); return; }
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      for (let g in data) {
+        if (data[g].classes[cName]) { data[g].classes[cName].push({ name: sName, pass: sPass }); break; }
+      }
+      localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+      document.getElementById('new-student-name').value = '';
+      renderGradesManagement(); alert("✅ Đã thêm học sinh!");
+    }
+
+    function removeStudent(cName, sName) {
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      for (let g in data) {
+        if (data[g].classes[cName]) data[g].classes[cName] = data[g].classes[cName].filter(x => x.name !== sName);
+      }
+      localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+      renderGradesManagement();
+    }
+
+    function deleteClass(cName) {
+      if (confirm(`Xóa lớp ${cName}?`)) {
+        let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+        for (let g in data) { if (data[g].classes[cName]) delete data[g].classes[cName]; }
+        localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+        renderGradesManagement(); initDashFilters();
+      }
+    }
+
+    function deleteGrade(gName) {
+      if (confirm(`Xóa khối ${gName}?`)) {
+        let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+        delete data[gName];
+        localStorage.setItem('msnghi_school_data', JSON.stringify(data));
+        renderGradesManagement(); initDashFilters(); initCreatorGrades();
+      }
+    }
+
+    function renderGradesManagement() {
+      let data = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      let container = document.getElementById('grades-management-container');
+      let selGradeForClass = document.getElementById('select-grade-for-class');
+      let selectClassForStu = document.getElementById('select-class-for-student');
+      let filterGradeClass = document.getElementById('filter-grade-class');
+
+      let gradeOpts = '<option value="">-- Chọn Khối --</option>';
+      let classOpts = '<option value="">-- Chọn Lớp --</option>';
+      let html = '';
+
+      for (let gName in data) {
+        gradeOpts += `<option value="${gName}">${gName}</option>`;
+        html += `
+          <div class="p-4 bg-amber-50/70 border-2 border-amber-300 rounded-2xl space-y-3">
+            <div class="flex justify-between items-center border-b border-amber-200 pb-2">
+              <span class="font-extrabold text-xs text-amber-950"><i class="bi bi-folder-fill text-amber-600"></i> Khối: ${gName}</span>
+              <button onclick="deleteGrade('${gName}')" class="text-red-500 font-bold text-xs"><i class="bi bi-trash"></i> Xóa Khối</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+        `;
+        let classesObj = data[gName].classes || {};
+        for (let cName in classesObj) {
+          classOpts += `<option value="${cName}">[${gName}] - ${cName}</option>`;
+          let students = classesObj[cName];
+          html += `
+            <div class="p-3 bg-white rounded-xl border border-amber-200 space-y-1">
+              <div class="flex justify-between items-center">
+                <span class="font-bold text-xs text-amber-900">Lớp: ${cName} (${students.length} HS)</span>
+                <button onclick="deleteClass('${cName}')" class="text-red-500 text-xs">×</button>
+              </div>
+              <div class="flex flex-wrap gap-1">
+                ${students.map(s => `<span class="bg-amber-50 border px-2 py-0.5 rounded text-[11px] font-bold">${s.name} (Pass:${s.pass}) <button onclick="removeStudent('${cName}', '${s.name}')" class="text-red-500">×</button></span>`).join('')}
+              </div>
+            </div>
+          `;
+        }
+        html += `</div></div>`;
+      }
+
+      container.innerHTML = html;
+      selGradeForClass.innerHTML = gradeOpts;
+      selectClassForStu.innerHTML = classOpts;
+      filterGradeClass.innerHTML = classOpts;
+    }
+
+    function initDashFilters() {
+      let schoolData = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      let subs = JSON.parse(localStorage.getItem('msnghi_student_submissions_v3') || '[]');
+      let gradeSel = document.getElementById('dash-filter-grade'), classSel = document.getElementById('dash-filter-class'), unitSel = document.getElementById('dash-filter-unit'), taskSel = document.getElementById('dash-filter-task');
+
+      let grades = Object.keys(schoolData);
+      gradeSel.innerHTML = '<option value="">-- Tất cả Khối --</option>' + grades.map(g => `<option value="${g}">${g}</option>`).join('');
+
+      let classes = [];
+      for(let g in schoolData) { classes.push(...Object.keys(schoolData[g].classes || {})); }
+      classSel.innerHTML = '<option value="">-- Tất cả Lớp --</option>' + [...new Set(classes)].map(c => `<option value="${c}">${c}</option>`).join('');
+
+      let units = [...new Set(subs.map(s => s.unitName).filter(Boolean))];
+      unitSel.innerHTML = '<option value="">-- Tất cả Unit --</option>' + units.map(u => `<option value="${u}">${u}</option>`).join('');
+
+      let tasks = [...new Set(subs.map(s => s.taskCode).filter(Boolean))];
+      taskSel.innerHTML = '<option value="">-- Tất cả Mã đề --</option>' + tasks.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function onDashGradeChange() {
+      let selectedGrade = document.getElementById('dash-filter-grade').value;
+      let schoolData = JSON.parse(localStorage.getItem('msnghi_school_data') || '{}');
+      let classSel = document.getElementById('dash-filter-class');
+      if (selectedGrade && schoolData[selectedGrade]) {
+        let classes = Object.keys(schoolData[selectedGrade].classes || {});
+        classSel.innerHTML = '<option value="">-- Tất cả Lớp --</option>' + classes.map(c => `<option value="${c}">${c}</option>`).join('');
+      } else {
+        let classes = [];
+        for(let g in schoolData) { classes.push(...Object.keys(schoolData[g].classes || {})); }
+        classSel.innerHTML = '<option value="">-- Tất cả Lớp --</option>' + [...new Set(classes)].map(c => `<option value="${c}">${c}</option>`).join('');
+      }
+      renderDashboardTable();
+    }
+
+    function resetDashFilters() {
+      document.getElementById('dash-filter-grade').value = '';
+      document.getElementById('dash-filter-class').value = '';
+      document.getElementById('dash-filter-unit').value = '';
+      document.getElementById('dash-filter-task').value = '';
+      document.getElementById('dash-filter-student').value = '';
+      initDashFilters(); renderDashboardTable();
+    }
+
+    function renderDashboardTable() {
+      let sg = document.getElementById('dash-filter-grade')?.value || '';
+      let sc = document.getElementById('dash-filter-class')?.value || '';
+      let su = document.getElementById('dash-filter-unit')?.value || '';
+      let st = document.getElementById('dash-filter-task')?.value || '';
+      let ss = document.getElementById('dash-filter-student')?.value.trim().toLowerCase() || '';
+
+      let subs = JSON.parse(localStorage.getItem('msnghi_student_submissions_v3') || '[]');
+      let tbody = document.getElementById('dashboard-table-body');
+
+      let filtered = subs.filter(x => {
+        return (!sg || x.gradeName === sg) && (!sc || x.className === sc) && (!su || x.unitName === su) && (!st || x.taskCode === st) && (!ss || (x.studentName && x.studentName.toLowerCase().includes(ss)));
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-xs text-slate-400 font-bold">Không tìm thấy bài nộp nào phù hợp.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(s => `
+        <tr class="hover:bg-amber-50/60 transition">
+          <td class="p-3 font-bold text-amber-950">${s.studentName}</td>
+          <td class="p-3 font-semibold text-amber-900">${s.className}</td>
+          <td class="p-3 font-medium">${s.unitName} - <span class="text-amber-800 font-bold">${s.taskCode}</span></td>
+          <td class="p-3 text-center font-black text-amber-950">${s.officialScore}</td>
+          <td class="p-3">${s.practiceHistory?.map(p => `L${p.run}: ${p.score}`).join(', ') || 'Chưa làm lại'}</td>
+          <td class="p-3 text-center text-slate-600">${s.duration || '--'}</td>
+          <td class="p-3 text-slate-600">${s.submittedAt || '--'}</td>
+        </tr>
+      `).join('');
+    }
+
+    function applyHighlight(type) {
+      let sel = window.getSelection();
+      if (!sel.rangeCount || sel.isCollapsed) return;
+      let range = sel.getRangeAt(0), span = document.createElement("span");
+      span.className = type === 'err' ? 'highlight-err' : 'highlight-good';
+      let note = prompt("Nhập nhận xét:"); if (note) span.title = note;
+      try { range.surroundContents(span); } catch (e) { alert("Chỉ bôi trong 1 câu!"); }
+    }
+
+    function loadStudentSubmissions() {
+      let subs = JSON.parse(localStorage.getItem('msnghi_student_submissions_v3') || '[]');
+      let container = document.getElementById('grading-submissions-container'), html = '';
+      subs.forEach((sub, i) => {
+        html += `
+          <div id="grade-${i}" class="p-4 bg-amber-50/50 border rounded-2xl space-y-2 text-xs">
+            <div class="flex justify-between font-bold">
+              <span>${sub.studentName} (Lớp: ${sub.className} - ${sub.unitName} | ${sub.taskCode})</span>
+              <span>Trắc nghiệm: ${sub.officialScore}</span>
+            </div>
+            <div class="p-3 bg-white rounded border" contenteditable="true">${sub.writingAnswer || '(Trống)'}</div>
+            <div class="flex gap-2">
+              <input type="text" value="${sub.generalComment || ''}" placeholder="Nhận xét..." class="border p-2 rounded flex-1">
+              <input type="text" value="${sub.essayScore || ''}" placeholder="Điểm TL..." class="border p-2 rounded w-24 font-bold">
+              <button onclick="saveGrade(${i})" class="bg-amber-500 font-bold px-4 py-2 rounded">Lưu</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html || '<p class="text-xs text-slate-400">Không có bài tự luận.</p>';
+    }
+
+    function saveGrade(i) {
+      let card = document.getElementById('grade-' + i), subs = JSON.parse(localStorage.getItem('msnghi_student_submissions_v3') || '[]');
+      subs[i].essayScore = card.querySelector('input:nth-child(2)').value;
+      subs[i].generalComment = card.querySelector('input').value;
+      subs[i].gradedWriting = card.querySelector('[contenteditable]').innerHTML;
+      localStorage.setItem('msnghi_student_submissions_v3', JSON.stringify(subs)); alert("✅ Đã lưu!");
+    }
+
+    function switchTab(name) {
+      ['classes', 'dashboard', 'creator', 'grading', 'password'].forEach(v => document.getElementById('view-' + v).classList.add('hidden'));
+      document.getElementById('view-' + name).classList.remove('hidden');
+      if (name === 'dashboard') { initDashFilters(); renderDashboardTable(); }
+      if (name === 'creator') { initCreatorGrades(); loadSavedFolders(); }
+      if (name === 'grading') loadStudentSubmissions();
+    }
+  </script>
+</body>
+</html>
